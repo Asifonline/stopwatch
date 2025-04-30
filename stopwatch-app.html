@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        .display {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 20px 0;
+            font-family: monospace;
+            color: #333;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        #startBtn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        #stopBtn {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        #resetBtn {
+            background-color: #2196F3;
+            color: white;
+        }
+        
+        button:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .title {
+            color: #333;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Stopwatch</h1>
+        <div class="display" id="display">00:00:00.000</div>
+        <div class="buttons">
+            <button id="startBtn">Start</button>
+            <button id="stopBtn" disabled>Stop</button>
+            <button id="resetBtn">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements
+        const display = document.getElementById('display');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        
+        // Variables for the stopwatch
+        let startTime;
+        let elapsedTime = 0;
+        let timerInterval;
+        let running = false;
+        
+        // Event listeners
+        startBtn.addEventListener('click', start);
+        stopBtn.addEventListener('click', stop);
+        resetBtn.addEventListener('click', reset);
+        
+        // Format time to display as 00:00:00.000
+        function formatTime(timeInMilliseconds) {
+            let milliseconds = Math.floor((timeInMilliseconds % 1000));
+            let seconds = Math.floor((timeInMilliseconds / 1000) % 60);
+            let minutes = Math.floor((timeInMilliseconds / (1000 * 60)) % 60);
+            let hours = Math.floor((timeInMilliseconds / (1000 * 60 * 60)));
+            
+            hours = hours.toString().padStart(2, '0');
+            minutes = minutes.toString().padStart(2, '0');
+            seconds = seconds.toString().padStart(2, '0');
+            milliseconds = milliseconds.toString().padStart(3, '0');
+            
+            return `${hours}:${minutes}:${seconds}.${milliseconds}`;
+        }
+        
+        // Update the timer display
+        function updateDisplay() {
+            const currentTime = Date.now();
+            const totalElapsedTime = elapsedTime + (currentTime - startTime);
+            display.textContent = formatTime(totalElapsedTime);
+        }
+        
+        // Start the stopwatch
+        function start() {
+            if (!running) {
+                startTime = Date.now();
+                timerInterval = setInterval(updateDisplay, 10); // Update every 10ms for smooth milliseconds
+                running = true;
+                
+                // Update button states
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+            }
+        }
+        
+        // Stop the stopwatch
+        function stop() {
+            if (running) {
+                clearInterval(timerInterval);
+                elapsedTime += (Date.now() - startTime);
+                running = false;
+                
+                // Update button states
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+            }
+        }
+        
+        // Reset the stopwatch
+        function reset() {
+            clearInterval(timerInterval);
+            elapsedTime = 0;
+            display.textContent = '00:00:00.000';
+            running = false;
+            
+            // Update button states
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+        }
+    </script>
+</body>
+</html>
